@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏃 HAR Studio Pro: Human Activity Recognition
 
 An end-to-end Machine Learning project to recognize human movement using smartphone sensors.
@@ -42,3 +43,34 @@ For a deep dive into the features, installation, and how the AI works, check out
 
 ---
 **Simple. Professional. Intelligent.**
+=======
+# 🏃 Activity Predictor ML Project
+
+This project predicts human activities using smartphone sensor data with K-Means clustering.
+
+## 🚀 Features
+
+* Machine Learning using K-Means
+* Feature scaling with StandardScaler
+* Streamlit interactive UI
+* Real-time prediction
+
+## 📂 Project Structure
+
+* app.py → Streamlit app
+* models/ → trained ML models (.pkl)
+* analysis.py → model training
+
+## ▶️ Run Locally
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+## 💡 Use Cases
+
+* Fitness tracking
+* Healthcare monitoring
+* Activity recognition
+>>>>>>> 11a5dcb58c3a146ac35858f554ed669326c0281f
