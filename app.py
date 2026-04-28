@@ -15,15 +15,15 @@ st.set_page_config(
 # --- Premium Aesthetics (Tailwind-Inspired) ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
     * { 
-        font-family: 'Outfit', sans-serif; 
+        font-family: 'Inter', sans-serif; 
     }
     
     /* Background Gradient */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+        background: linear-gradient(135deg, #0a192f 0%, #312e81 50%, #4c1d95 100%);
         color: #f8fafc;
     }
     
@@ -34,13 +34,14 @@ st.markdown("""
 
     /* Main Glassmorphic Card */
     .main-card {
-        background: rgba(30, 41, 59, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 24px;
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
         padding: 40px;
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        margin-bottom: 2rem;
     }
     
     /* Typography */
@@ -50,6 +51,7 @@ st.markdown("""
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 0.5rem !important;
+        text-align: center;
     }
     
     .subtitle {
@@ -57,50 +59,56 @@ st.markdown("""
         font-size: 1.1rem;
         margin-bottom: 2rem;
         font-weight: 300;
+        text-align: center;
     }
     
-    /* Inputs Styling */
-    .stNumberInput > label {
-        color: #cbd5e1 !important;
+    /* Sections */
+    .section-header {
+        color: #a5b4fc;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(165, 180, 252, 0.2);
+        padding-bottom: 0.5rem;
+    }
+    .section-header:first-of-type {
+        margin-top: 0;
+    }
+
+    /* Sliders Styling */
+    .stSlider label {
+        color: #e2e8f0 !important;
         font-weight: 500 !important;
         font-size: 0.95rem !important;
-    }
-    
-    div[data-baseweb="input"] {
-        background-color: rgba(15, 23, 42, 0.6) !important;
-        border: 1px solid rgba(99, 102, 241, 0.2) !important;
-        border-radius: 12px !important;
-        transition: all 0.3s ease !important;
-    }
-    div[data-baseweb="input"]:focus-within {
-        border-color: #818cf8 !important;
-        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
-    }
-    div[data-baseweb="input"] input {
-        color: #f8fafc !important;
     }
     
     /* Vibrant Button */
     .stButton>button {
         width: 100%;
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
         color: white;
         border: none;
         padding: 16px;
-        border-radius: 14px;
+        border-radius: 50px;
         font-weight: 600;
         font-size: 1.1rem;
         letter-spacing: 0.05em;
         transition: all 0.3s ease;
         text-transform: uppercase;
-        margin-top: 10px;
-        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        margin-top: 2rem;
+        box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.3), 0 4px 6px -2px rgba(236, 72, 153, 0.15);
     }
     
     .stButton>button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.5);
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        transform: scale(1.02);
+        box-shadow: 0 20px 25px -5px rgba(236, 72, 153, 0.5), 0 10px 10px -5px rgba(236, 72, 153, 0.2);
+        background: linear-gradient(135deg, #9333ea 0%, #db2777 100%);
+        color: white;
+        border-color: transparent !important;
+    }
+    
+    .stButton>button:focus:not(:focus-visible) {
         color: white;
     }
     
@@ -117,20 +125,9 @@ st.markdown("""
         backdrop-filter: blur(10px);
         margin-bottom: 24px;
     }
-    .error-icon {
-        font-size: 24px;
-    }
-    .error-content h3 {
-        color: #f87171;
-        margin: 0 0 8px 0;
-        font-size: 1.2rem;
-        font-weight: 600;
-    }
-    .error-content p {
-        margin: 0 0 12px 0;
-        line-height: 1.5;
-        font-size: 0.95rem;
-    }
+    .error-icon { font-size: 24px; }
+    .error-content h3 { color: #f87171; margin: 0 0 8px 0; font-size: 1.2rem; font-weight: 600; }
+    .error-content p { margin: 0 0 12px 0; line-height: 1.5; font-size: 0.95rem; }
     .error-code {
         background: rgba(0, 0, 0, 0.3);
         padding: 8px 12px;
@@ -141,30 +138,49 @@ st.markdown("""
     }
     
     /* Result Section */
+    .result-card {
+        background: rgba(15, 23, 42, 0.6);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        animation: glow 2s ease-in-out infinite alternate;
+        margin-top: 2rem;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    @keyframes glow {
+        from { box-shadow: 0 0 10px rgba(168, 85, 247, 0.2); border-color: rgba(168, 85, 247, 0.2); }
+        to { box-shadow: 0 0 25px rgba(168, 85, 247, 0.5); border-color: rgba(168, 85, 247, 0.5); }
+    }
+
     .prediction-title {
-        font-size: 1rem;
-        color: #94a3b8;
-        letter-spacing: 0.15em;
+        font-size: 1.1rem;
+        color: #cbd5e1;
         text-transform: uppercase;
-        margin-top: 24px;
-        margin-bottom: 8px;
-        font-weight: 500;
+        letter-spacing: 0.1em;
+        margin-bottom: 1rem;
     }
-    
+
     .prediction-value {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 700;
-        background: linear-gradient(to right, #38bdf8, #818cf8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 16px;
-        line-height: 1.1;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
     }
-    
-    /* Divider */
-    hr {
-        border-color: rgba(255, 255, 255, 0.1) !important;
-        margin: 2rem 0 !important;
+
+    .status-normal { color: #4ade80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.4); }
+    .status-moderate { color: #fb923c; text-shadow: 0 0 20px rgba(251, 146, 60, 0.4); }
+    .status-risky { color: #f87171; text-shadow: 0 0 20px rgba(248, 113, 113, 0.4); }
+
+    .insight-text {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        margin-top: 1rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -222,25 +238,34 @@ with st.container():
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     
     with st.form("activity_form"):
-        col1, col2 = st.columns(2)
         user_inputs = {}
         
-        # We only use the 10 important features as inputs for simplicity
-        # The rest will be set to 0 (neutral) for the full model prediction
-        important_features = assets['important_features']
-        
-        for i, feat in enumerate(important_features):
+        st.markdown('<div class="section-header">🏃 Movement Metrics</div>', unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        metrics = ['tBodyAcc-mean()-X', 'tBodyAcc-mean()-Z', 'fBodyAcc-mean()-X']
+        for i, feat in enumerate(metrics):
             with col1 if i % 2 == 0 else col2:
-                simple_name = FEATURE_MAP.get(feat, feat.replace('-', ' ').title())
-                user_inputs[feat] = st.number_input(
-                    simple_name, 
-                    value=0.0, 
-                    format="%.4f",
-                    help=f"Original Technical Key: {feat}"
-                )
+                name = FEATURE_MAP.get(feat, feat)
+                user_inputs[feat] = st.slider(name, min_value=-2.0, max_value=2.0, value=0.0, step=0.01, help=f"Sensor: {feat}")
+
+        st.markdown('<div class="section-header">🔄 Motion Behavior</div>', unsafe_allow_html=True)
+        col3, col4 = st.columns(2)
+        behavior = ['tGravityAcc-mean()-X', 'tGravityAcc-mean()-Y', 'tBodyGyro-mean()-X', 'tBodyGyro-mean()-Z']
+        for i, feat in enumerate(behavior):
+            with col3 if i % 2 == 0 else col4:
+                name = FEATURE_MAP.get(feat, feat)
+                user_inputs[feat] = st.slider(name, min_value=-2.0, max_value=2.0, value=0.0, step=0.01, help=f"Sensor: {feat}")
+
+        st.markdown('<div class="section-header">⚖️ Stability & Energy</div>', unsafe_allow_html=True)
+        col5, col6 = st.columns(2)
+        stability = ['tBodyAccMag-mean()', 'tGravityAccMag-mean()', 'fBodyAcc-std()-Y']
+        for i, feat in enumerate(stability):
+            with col5 if i % 2 == 0 else col6:
+                name = FEATURE_MAP.get(feat, feat)
+                user_inputs[feat] = st.slider(name, min_value=-2.0, max_value=2.0, value=0.0, step=0.01, help=f"Sensor: {feat}")
         
         st.markdown("<br>", unsafe_allow_html=True)
-        submitted = st.form_submit_button("Analyze Movement Data")
+        submitted = st.form_submit_button("Analyze Activity")
         
         if submitted:
             # Prepare full feature vector (561 features)
@@ -250,24 +275,38 @@ with st.container():
                     idx = assets['feature_names'].index(feat)
                     full_input[0, idx] = val
             
-            # Predict
-            scaled_input = assets['scaler'].transform(full_input)
-            prediction_cluster = assets['kmeans'].predict(scaled_input)[0]
-            activity_label = assets['cluster_activity_mapping'].get(prediction_cluster, f"Cluster {prediction_cluster}")
-            
-            # Success Animation
-            time.sleep(0.5)
-            
-            st.markdown("<hr>", unsafe_allow_html=True)
-            st.markdown(f'<div class="prediction-title">Detected Activity</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="prediction-value">{activity_label}</div>', unsafe_allow_html=True)
-            
-            if "WALKING" in activity_label.upper():
-                st.info("💡 Insight: High frequency movement detected. This matches active cardio profiles.")
-            elif "SITTING" in activity_label.upper() or "LAYING" in activity_label.upper():
-                st.info("💡 Insight: Low impact/static position detected. This matches sedentary profiles.")
-            else:
-                st.info("💡 Insight: Moderate activity detected.")
+            with st.spinner("Analyzing Movement Data..."):
+                time.sleep(1) # Smooth loading effect
+                
+                # Predict
+                scaled_input = assets['scaler'].transform(full_input)
+                prediction_cluster = assets['kmeans'].predict(scaled_input)[0]
+                activity_label = assets['cluster_activity_mapping'].get(prediction_cluster, f"Cluster {prediction_cluster}")
+                
+                # Setup Display Properties
+                activity_upper = activity_label.upper()
+                if "WALKING" in activity_upper:
+                    icon = "🏃"
+                    status_class = "status-risky" if "UPSTAIRS" in activity_upper or "DOWNSTAIRS" in activity_upper else "status-moderate"
+                    insight = "High frequency movement detected. Matches active cardio profiles."
+                elif "SITTING" in activity_upper or "LAYING" in activity_upper:
+                    icon = "🧍"
+                    status_class = "status-normal"
+                    insight = "Low impact/static position detected. Matches sedentary profiles."
+                else:
+                    icon = "🚶"
+                    status_class = "status-normal"
+                    insight = "Moderate activity detected."
+                
+                st.markdown(f'''
+                <div class="result-card">
+                    <div class="prediction-title">Detected Activity</div>
+                    <div class="prediction-value {status_class}">
+                        {icon} <span>{activity_label}</span>
+                    </div>
+                    <div class="insight-text">💡 {insight}</div>
+                </div>
+                ''', unsafe_allow_html=True)
             
     st.markdown('</div>', unsafe_allow_html=True)
 
