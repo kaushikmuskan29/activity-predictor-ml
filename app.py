@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
+import joblib
 import os
 import time
 
@@ -188,19 +188,20 @@ st.markdown("""
 # --- Constants & Asset Loading ---
 MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models')
 
-@st.cache_resource
-def load_model():
+# Add a cache-busting parameter to force reload
+@st.cache_resource(show_spinner="Loading ML Models...")
+def load_ml_assets():
     assets = {}
     files = ['kmeans.pkl', 'scaler.pkl', 'feature_names.pkl', 'cluster_activity_mapping.pkl', 'important_features.pkl']
     try:
         for f in files:
-            with open(os.path.join(MODEL_DIR, f), 'rb') as file:
-                assets[f.split('.')[0]] = pickle.load(file)
+            assets[f.split('.')[0]] = joblib.load(os.path.join(MODEL_DIR, f))
         return assets
-    except:
+    except Exception as e:
+        st.error(f"Error loading models: {e}")
         return None
 
-assets = load_model()
+assets = load_ml_assets()
 
 # --- Simplified Feature Mapping ---
 FEATURE_MAP = {
@@ -237,16 +238,58 @@ if not assets:
 with st.container():
     st.markdown('<div class="main-card">', unsafe_allow_html=True)
     
+    # --- Preset Logic ---
+    scaler = assets['scaler']
+    feature_names = assets['feature_names']
+    centroids = scaler.inverse_transform(assets['kmeans'].cluster_centers_)
+    mapping = assets['cluster_activity_mapping']
+    
+    presets = {"Manual Exploration (Baseline)": None}
+    for i, centroid in enumerate(centroids):
+        activity = mapping.get(i, f"Cluster {i}")
+        presets[f"Simulate {activity.replace('_', ' ').title()} (Pattern {i})"] = centroid
+        
+    st.markdown("<p style='color: #cbd5e1; font-weight: 500; margin-bottom: 0.5rem;'>🎯 Select a Pre-defined Scenario (or explore manually):</p>", unsafe_allow_html=True)
+    selected_preset = st.selectbox("Preset", list(presets.keys()), label_visibility="collapsed")
+    preset_values = presets[selected_preset]
+    
     with st.form("activity_form"):
         user_inputs = {}
         
+        def get_slider_params(feat_name):
+            if feat_name in feature_names:
+                idx = feature_names.index(feat_name)
+                mean_val = float(scaler.mean_[idx])
+                std_val = float(scaler.scale_[idx])
+                
+                min_b = float(mean_val - 3 * std_val)
+                max_b = float(mean_val + 3 * std_val)
+                
+                # Use preset value if available, else mean
+                if preset_values is not None:
+                    default_val = float(preset_values[idx])
+                else:
+                    default_val = float(mean_val)
+                    
+                # Ensure default is within bounds
+                default_val = max(min_b, min(default_val, max_b))
+                
+                return {
+                    'min_value': min_b,
+                    'max_value': max_b,
+                    'value': default_val,
+                    'step': float(std_val / 10) if std_val > 0 else 0.01
+                }
+            return {'min_value': -2.0, 'max_value': 2.0, 'value': 0.0, 'step': 0.01}
+
         st.markdown('<div class="section-header">🏃 Movement Metrics</div>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         metrics = ['tBodyAcc-mean()-X', 'tBodyAcc-mean()-Z', 'fBodyAcc-mean()-X']
         for i, feat in enumerate(metrics):
             with col1 if i % 2 == 0 else col2:
                 name = FEATURE_MAP.get(feat, feat)
-                user_inputs[feat] = st.slider(name, min_value=-2.0, max_value=2.0, value=0.0, step=0.01, help=f"Sensor: {feat}")
+                params = get_slider_params(feat)
+                user_inputs[feat] = st.slider(name, help=f"Sensor: {feat}", key=f"{feat}_{selected_preset}", **params)
 
         st.markdown('<div class="section-header">🔄 Motion Behavior</div>', unsafe_allow_html=True)
         col3, col4 = st.columns(2)
@@ -254,7 +297,8 @@ with st.container():
         for i, feat in enumerate(behavior):
             with col3 if i % 2 == 0 else col4:
                 name = FEATURE_MAP.get(feat, feat)
-                user_inputs[feat] = st.slider(name, min_value=-2.0, max_value=2.0, value=0.0, step=0.01, help=f"Sensor: {feat}")
+                params = get_slider_params(feat)
+                user_inputs[feat] = st.slider(name, help=f"Sensor: {feat}", key=f"{feat}_{selected_preset}", **params)
 
         st.markdown('<div class="section-header">⚖️ Stability & Energy</div>', unsafe_allow_html=True)
         col5, col6 = st.columns(2)
@@ -262,51 +306,75 @@ with st.container():
         for i, feat in enumerate(stability):
             with col5 if i % 2 == 0 else col6:
                 name = FEATURE_MAP.get(feat, feat)
-                user_inputs[feat] = st.slider(name, min_value=-2.0, max_value=2.0, value=0.0, step=0.01, help=f"Sensor: {feat}")
+                params = get_slider_params(feat)
+                user_inputs[feat] = st.slider(name, help=f"Sensor: {feat}", key=f"{feat}_{selected_preset}", **params)
         
         st.markdown("<br>", unsafe_allow_html=True)
         submitted = st.form_submit_button("Analyze Activity")
         
         if submitted:
-            # Prepare full feature vector (561 features)
-            full_input = np.zeros((1, len(assets['feature_names'])))
-            for feat, val in user_inputs.items():
-                if feat in assets['feature_names']:
-                    idx = assets['feature_names'].index(feat)
-                    full_input[0, idx] = val
+            # We now train only on the important features, so our input size matches
+            feature_names = assets['feature_names'] # which is exactly the 10 key features
+            
+            # Construct a 1D array of exactly len(feature_names)
+            full_input = np.zeros((1, len(feature_names)))
+            for i, feat in enumerate(feature_names):
+                full_input[0, i] = user_inputs.get(feat, 0.0)
             
             with st.spinner("Analyzing Movement Data..."):
                 time.sleep(1) # Smooth loading effect
                 
                 # Predict
                 scaled_input = assets['scaler'].transform(full_input)
+                distances = assets['kmeans'].transform(scaled_input)[0]
                 prediction_cluster = assets['kmeans'].predict(scaled_input)[0]
                 activity_label = assets['cluster_activity_mapping'].get(prediction_cluster, f"Cluster {prediction_cluster}")
+                
+                # Distance to centroid as confidence
+                # Calculate inverse distance ratio for confidence percentage
+                dist_to_center = distances[prediction_cluster]
+                max_dist = max(distances)
+                # Avoid division by zero, basic normalization
+                if max_dist > 0:
+                    confidence = max(0.0, min(100.0, (1 - (dist_to_center / (max_dist * 1.5))) * 100))
+                else:
+                    confidence = 100.0
                 
                 # Setup Display Properties
                 activity_upper = activity_label.upper()
                 if "WALKING" in activity_upper:
                     icon = "🏃"
                     status_class = "status-risky" if "UPSTAIRS" in activity_upper or "DOWNSTAIRS" in activity_upper else "status-moderate"
-                    insight = "High frequency movement detected. Matches active cardio profiles."
+                    insight = f"Dynamic movement detected. The sensor behavior strongly matches {activity_label.replace('_', ' ').lower()} profiles."
                 elif "SITTING" in activity_upper or "LAYING" in activity_upper:
                     icon = "🧍"
                     status_class = "status-normal"
-                    insight = "Low impact/static position detected. Matches sedentary profiles."
+                    insight = f"Low impact or static position detected. The sensor behavior matches {activity_label.replace('_', ' ').lower()} profiles."
                 else:
                     icon = "🚶"
                     status_class = "status-normal"
-                    insight = "Moderate activity detected."
+                    insight = f"Moderate activity detected. Matches {activity_label.replace('_', ' ').lower()}."
                 
                 st.markdown(f'''
                 <div class="result-card">
-                    <div class="prediction-title">Detected Activity</div>
+                    <div class="prediction-title">Detected Activity (Cluster {prediction_cluster})</div>
                     <div class="prediction-value {status_class}">
                         {icon} <span>{activity_label}</span>
+                    </div>
+                    <div style="color: #cbd5e1; margin-bottom: 1rem; font-size: 0.95rem;">
+                        Confidence / Match Score: <strong>{confidence:.1f}%</strong>
                     </div>
                     <div class="insight-text">💡 {insight}</div>
                 </div>
                 ''', unsafe_allow_html=True)
+                
+                with st.expander("🔍 Debug Information (Internal ML Math)"):
+                    st.markdown("**1. Raw Sensor Inputs (10 Features):**")
+                    st.write(full_input)
+                    st.markdown("**2. Scaled Inputs (Standardized):**")
+                    st.write(scaled_input)
+                    st.markdown(f"**3. Predicted Cluster:** {prediction_cluster}")
+                    st.markdown(f"**4. Final Mapped Activity:** {activity_label}")
             
     st.markdown('</div>', unsafe_allow_html=True)
 

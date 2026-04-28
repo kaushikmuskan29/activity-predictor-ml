@@ -91,26 +91,35 @@ if duplicates > 0:
         y = y.loc[X.index]
     print(f"   After removing duplicates: {X.shape}")
 
-feature_names = list(X.columns)
+import joblib
 
 # ──────────────────────────────────────────────────────
 # STEP 3: Feature Selection & Scaling
 # ──────────────────────────────────────────────────────
 print("\n\n📐 STEP 3: Feature Selection & Scaling...")
-print(f"   Total features: {len(feature_names)}")
-print(f"   Feature categories:")
-print(f"     - tBodyAcc features: {len([f for f in feature_names if f.startswith('tBodyAcc')])}")
-print(f"     - tGravityAcc features: {len([f for f in feature_names if f.startswith('tGravityAcc')])}")
-print(f"     - tBodyGyro features: {len([f for f in feature_names if f.startswith('tBodyGyro')])}")
-print(f"     - fBody features: {len([f for f in feature_names if f.startswith('fBody')])}")
-print(f"     - angle features: {len([f for f in feature_names if f.startswith('angle')])}")
+
+# Key features for interpretation and model training
+key_features = [
+    'tBodyAcc-mean()-X', 'tBodyAcc-mean()-Z',
+    'tGravityAcc-mean()-X', 'tGravityAcc-mean()-Y',
+    'tBodyGyro-mean()-X', 'tBodyGyro-mean()-Z',
+    'tBodyAccMag-mean()', 'tGravityAccMag-mean()',
+    'fBodyAcc-mean()-X', 'fBodyAcc-std()-Y'
+]
+
+# Ensure the selected features exist in the dataframe
+X_selected = X[key_features].copy()
+feature_names = key_features
+
+print(f"   Total selected features: {len(feature_names)}")
 
 # Apply StandardScaler
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+X_scaled = scaler.fit_transform(X_selected)
+
 print(f"\n   After scaling:")
-print(f"     Mean of first 5 features: {X_scaled[:, :5].mean(axis=0).round(6)}")
-print(f"     Std of first 5 features:  {X_scaled[:, :5].std(axis=0).round(6)}")
+print(f"     Mean of features: {X_scaled.mean(axis=0).round(6)}")
+print(f"     Std of features:  {X_scaled.std(axis=0).round(6)}")
 
 # ──────────────────────────────────────────────────────
 # STEP 4: Elbow Method for Optimal K
@@ -258,15 +267,6 @@ print("\n\n🧠 STEP 8: Cluster Interpretation...")
 from utils import get_readable_mapping
 readable_feature_mapping = get_readable_mapping(feature_names)
 
-# Key features for interpretation
-key_features = [
-    'tBodyAcc-mean()-X', 'tBodyAcc-mean()-Z',
-    'tGravityAcc-mean()-X', 'tGravityAcc-mean()-Y',
-    'tBodyGyro-mean()-X', 'tBodyGyro-mean()-Z',
-    'tBodyAccMag-mean()', 'tGravityAccMag-mean()',
-    'fBodyAcc-mean()-X', 'fBodyAcc-std()-Y'
-]
-
 key_idx = [feature_names.index(f) for f in key_features if f in feature_names]
 
 print("   Cluster Centroids (key features - scaled values):")
@@ -327,10 +327,10 @@ artifacts = {
     'important_features': key_features
 }
 
+import joblib
 for name, obj in artifacts.items():
-    with open(os.path.join(MODEL_DIR, f'{name}.pkl'), 'wb') as f:
-        pickle.dump(obj, f)
-    print(f"   ✅ {name}.pkl saved")
+    joblib.dump(obj, os.path.join(MODEL_DIR, f'{name}.pkl'))
+    print(f"   ✅ {name}.pkl saved with joblib")
 
 print("\n" + "=" * 70)
 print("  ✅ ANALYSIS COMPLETE!")
