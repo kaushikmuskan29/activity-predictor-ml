@@ -1,76 +1,64 @@
-<<<<<<< HEAD
-# 🏃 HAR Studio Pro: Human Activity Recognition
+# 🏃 Activity Predictor & HAR Studio Pro
 
 An end-to-end Machine Learning project to recognize human movement using smartphone sensors.
 
----
-
 ## 🌟 What This Project Does
-This studio takes complex signal data from accelerometers and gyroscopes to automatically identify if a person is standing, walking, or laying down. It turns "unreadable" sensor data into a visual intelligence dashboard.
+This studio takes complex signal data from accelerometers and gyroscopes to automatically identify if a person is standing, walking, or laying down. It turns "unreadable" sensor data into a visual intelligence dashboard using K-Means clustering.
 
----
-
-## �️ Tech Stack
+## 🛠️ Tech Stack
 - **Languages**: Python
-- **AI Libraries**: Scikit-Learn (K-Means, PCA)
+- **AI Libraries**: Scikit-Learn (K-Means, PCA, StandardScaler)
 - **Interface**: Streamlit
 - **Visualization**: Matplotlib, Seaborn
 - **Data**: Pandas, NumPy
 
+## 📂 Project Structure
+- `app.py` → Streamlit interactive UI
+- `analysis.py` → Model training script
+- `models/` → Trained ML models (.pkl files)
+- `data/` → Contains `train.csv` and `test.csv` (Requires manual download/placement)
+- `utils.py` → Helper functions
+
 ---
 
-## 🚀 Quick Start (Local)
+## 🚀 Quick Start (Windows)
 
-1. **Install everything**:
+Follow these exact steps to run the project on a Windows machine:
+
+1. **Open your Terminal (Command Prompt or PowerShell)** and navigate to the project folder.
+
+2. **Create a Virtual Environment** (Recommended):
+   ```bash
+   python -m venv venv
+   ```
+
+3. **Activate the Virtual Environment**:
+   - Command Prompt:
+     ```cmd
+     venv\Scripts\activate.bat
+     ```
+   - PowerShell:
+     ```powershell
+     .\venv\Scripts\Activate.ps1
+     ```
+
+4. **Install all required dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Prepare the models**:
+5. **Prepare the Data & Models**:
+   - Ensure your dataset (`train.csv` and `test.csv`) is placed inside a folder named `data`.
+   - Run the analysis script to generate the Machine Learning models:
    ```bash
    python analysis.py
    ```
 
-3. **See the results**:
+6. **Start the Web App**:
    ```bash
    streamlit run app.py
    ```
-
----
-
-## 📖 Detailed Documentation
-For a deep dive into the features, installation, and how the AI works, check out the **[Full Documentation File](docs/documentation.md)**.
+   A browser window will open automatically with the beautiful new UI.
 
 ---
 **Simple. Professional. Intelligent.**
-=======
-# 🏃 Activity Predictor ML Project
-
-This project predicts human activities using smartphone sensor data with K-Means clustering.
-
-## 🚀 Features
-
-* Machine Learning using K-Means
-* Feature scaling with StandardScaler
-* Streamlit interactive UI
-* Real-time prediction
-
-## 📂 Project Structure
-
-* app.py → Streamlit app
-* models/ → trained ML models (.pkl)
-* analysis.py → model training
-
-## ▶️ Run Locally
-
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-## 💡 Use Cases
-
-* Fitness tracking
-* Healthcare monitoring
-* Activity recognition
->>>>>>> 11a5dcb58c3a146ac35858f554ed669326c0281f
